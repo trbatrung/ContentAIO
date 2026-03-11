@@ -1,0 +1,95 @@
+{
+  "lastUpdated": "2026-03-11T16:27:01.771Z",
+  "items": [
+    {
+      "num": "1",
+      "title": "How to Design an AI Program",
+      "pillar": "Problem First. AI Second.",
+      "hook": "Most leaders think running AI means knowing how to code. It doesn't.",
+      "remember": "5 steps: Define user, map data, design workflow, set metrics, train people. Problem first. AI second. ROI always.",
+      "status": "Ready to Film",
+      "date": ""
+    },
+    {
+      "num": "2",
+      "title": "Your Leaders Were Trained for the Wrong Era",
+      "pillar": "The 50/50 Era",
+      "hook": "Your leaders were trained to lead people. Half the work is now AI. Nobody retrained them.",
+      "remember": "We're in the 50/50 era ? half human, half AI. The gap isn't tools. It's leadership.",
+      "status": "Ready to Film",
+      "date": ""
+    },
+    {
+      "num": "3",
+      "title": "95% of Companies Get Zero AI ROI",
+      "pillar": "Proof It Works",
+      "hook": "95% of organizations spending on AI are getting nothing back. Here's the one thing they're all missing.",
+      "remember": "No one owns the program. No one measures the return. The AI Officer fixes that.",
+      "status": "Ready to Film",
+      "date": ""
+    },
+    {
+      "num": "4",
+      "title": "What I Actually Do With Claude Code",
+      "pillar": "AI Officer in the Wild",
+      "hook": "I didn't replace my developer. I replaced the developer who didn't know this tool.",
+      "remember": "Leaders don't need to build. They need to understand what's possible and direct it.",
+      "status": "Ready to Film",
+      "date": ""
+    },
+    {
+      "num": "5",
+      "title": "Stop Buying AI Tools. Start Building AI Officers.",
+      "pillar": "The 50/50 Era",
+      "hook": "Your company doesn't have an AI problem. It has a leadership problem.",
+      "remember": "Tools without trained leaders = zero ROI. Certification is the fix.",
+      "status": "Ready to Film",
+      "date": ""
+    },
+    {
+      "num": "6",
+      "title": "AI Is Not Saving Time. It?s Rewriting Jobs.",
+      "pillar": "The 50/50 Era",
+      "hook": "Most people think AI just helps them work faster. The real shift is that it changes what their job even is.",
+      "remember": "AI doesn?t just speed up old work. It creates new expectations, new roles, and new leadership pressure.",
+      "status": "Ready to Film",
+      "date": ""
+    },
+    {
+      "num": "7",
+      "title": "Your Team Doesn?t Need More Prompts. It Needs a System.",
+      "pillar": "Problem First. AI Second.",
+      "hook": "Most AI efforts fail because teams are sharing hacks instead of building a workflow.",
+      "remember": "Prompts are not strategy. Real adoption comes from repeatable systems, clear ownership, and practical use cases.",
+      "status": "Ready to Film",
+      "date": ""
+    },
+    {
+      "num": "8",
+      "title": "The Best AI Teams Are Boring on Purpose",
+      "pillar": "Proof It Works",
+      "hook": "The companies getting ROI from AI usually aren?t flashy. They?re disciplined.",
+      "remember": "Winning teams track outcomes, standardize usage, and focus on useful execution over hype.",
+      "status": "Ready to Film",
+      "date": ""
+    },
+    {
+      "num": "9",
+      "title": "What an AI Officer Actually Changes in 30 Days",
+      "pillar": "AI Officer in the Wild",
+      "hook": "The value of an AI Officer is not theory. It?s what changes in the first month.",
+      "remember": "First 30 days: audit workflows, find waste, pick use cases, assign owners, and create momentum.",
+      "status": "Ready to Film",
+      "date": ""
+    },
+    {
+      "num": "10",
+      "title": "Most AI Rollouts Fail Before the Tool Even Starts",
+      "pillar": "Problem First. AI Second.",
+      "hook": "Companies blame the tool when the real failure happened earlier: bad process, vague goals, no buy-in.",
+      "remember": "If the problem is fuzzy, AI scales confusion. Clarity first, tool second.",
+      "status": "Ready to Film",
+      "date": ""
+    }
+  ]
+}
