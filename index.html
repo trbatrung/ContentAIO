@@ -3,586 +3,289 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dave's Content Queue — AI Officer Institute</title>
+<title>Dave's Content Queue</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --black: #0a0a0a;
-    --white: #f5f3ee;
-    --red: #e63329;
-    --gold: #f0a500;
-    --blue: #1a6ef5;
-    --purple: #7c3aed;
-    --green: #16a34a;
-    --text-muted: #888;
+    --black: #0a0a0a; --white: #f5f3ee; --red: #e63329;
+    --gold: #f0a500; --blue: #1a6ef5; --purple: #7c3aed;
+    --green: #16a34a; --muted: #888;
   }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--black); color:var(--white); font-family:'DM Sans',sans-serif; min-height:100vh; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  header { padding:40px 48px 32px; border-bottom:1px solid #1a1a1a; display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+  header h1 { font-family:'Syne',sans-serif; font-size:clamp(24px,4vw,42px); font-weight:800; letter-spacing:-1px; }
+  header h1 span { color:var(--red); }
+  .tagline { font-size:13px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-top:8px; }
+  .refresh-btn { background:#1a1a1a; border:1px solid #333; color:var(--white); padding:8px 16px; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:12px; cursor:pointer; letter-spacing:1px; text-transform:uppercase; }
+  .refresh-btn:hover { background:#252525; }
+  #lastUpdated { font-size:12px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
 
-  body {
-    background: var(--black);
-    color: var(--white);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-  }
+  .stats-bar { display:flex; border-bottom:1px solid #1a1a1a; overflow-x:auto; }
+  .stat { flex:1; min-width:100px; padding:24px 32px; border-right:1px solid #1a1a1a; text-align:center; }
+  .stat:last-child { border-right:none; }
+  .stat-num { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; display:block; }
+  .stat-lbl { font-size:11px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-top:6px; display:block; }
+  .s-ready .stat-num { color:var(--gold); }
+  .s-filmed .stat-num { color:#a78bfa; }
+  .s-pub .stat-num { color:#4ade80; }
 
-  header {
-    padding: 40px 48px 32px;
-    border-bottom: 1px solid #1a1a1a;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
+  .filters { padding:20px 48px; display:flex; gap:8px; flex-wrap:wrap; border-bottom:1px solid #1a1a1a; align-items:center; }
+  .flbl { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-right:4px; }
+  .fbtn { background:transparent; border:1px solid #333; color:#888; padding:6px 14px; border-radius:20px; font-family:'DM Sans',sans-serif; font-size:12px; cursor:pointer; transition:all 0.2s; }
+  .fbtn:hover { border-color:#555; color:#ccc; }
+  .fbtn.active { background:var(--white); color:var(--black); border-color:var(--white); }
+  .fbtn[data-p="The 50/50 Era"].active { background:var(--blue); border-color:var(--blue); color:white; }
+  .fbtn[data-p="Problem First. AI Second."].active { background:var(--red); border-color:var(--red); color:white; }
+  .fbtn[data-p="AI Officer in the Wild"].active { background:var(--purple); border-color:var(--purple); color:white; }
+  .fbtn[data-p="Proof It Works"].active { background:var(--gold); border-color:var(--gold); color:black; }
 
-  .header-left h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(24px, 4vw, 42px);
-    font-weight: 800;
-    letter-spacing: -1px;
-    line-height: 1;
-  }
+  .content { padding:32px 48px 64px; }
+  .sec-title { font-family:'Syne',sans-serif; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:20px; display:flex; align-items:center; gap:12px; }
+  .sec-title::after { content:''; flex:1; height:1px; background:#1a1a1a; }
 
-  .header-left h1 span { color: var(--red); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:16px; }
 
-  .tagline {
-    font-size: 13px;
-    color: var(--text-muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-top: 8px;
-    font-weight: 300;
-  }
+  .card { background:#111; border:1px solid #1e1e1e; border-radius:12px; padding:24px; transition:all 0.25s; position:relative; overflow:hidden; animation:fadeUp 0.4s ease forwards; opacity:0; }
+  .card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+  .card[data-p="The 50/50 Era"]::before { background:var(--blue); }
+  .card[data-p="Problem First. AI Second."]::before { background:var(--red); }
+  .card[data-p="AI Officer in the Wild"]::before { background:var(--purple); }
+  .card[data-p="Proof It Works"]::before { background:var(--gold); }
+  .card:hover { border-color:#2a2a2a; box-shadow:0 8px 32px rgba(0,0,0,0.3); }
 
-  .header-right { display: flex; align-items: center; gap: 12px; }
+  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; gap:12px; }
+  .card-num { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; color:var(--muted); letter-spacing:1px; }
+  .badge { font-size:10px; font-weight:500; letter-spacing:1px; text-transform:uppercase; padding:4px 10px; border-radius:20px; }
+  .b-ready { background:rgba(240,165,0,0.15); color:var(--gold); border:1px solid rgba(240,165,0,0.3); }
+  .b-filmed { background:rgba(124,58,237,0.15); color:#a78bfa; border:1px solid rgba(124,58,237,0.3); }
+  .b-published { background:rgba(74,222,128,0.15); color:#4ade80; border:1px solid rgba(74,222,128,0.3); }
 
-  .last-updated { font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+  .card-title { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; line-height:1.3; margin-bottom:12px; letter-spacing:-0.3px; }
+  .card-hook { font-size:13px; color:#aaa; line-height:1.6; margin-bottom:16px; font-style:italic; }
+  .card-hook::before { content:'"'; } .card-hook::after { content:'"'; }
+  .divider { height:1px; background:#1e1e1e; margin-bottom:14px; }
+  .rem-lbl { font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  .rem { font-size:13px; color:#ccc; line-height:1.6; }
 
-  .refresh-btn {
-    background: #1a1a1a;
-    border: 1px solid #333;
-    color: var(--white);
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    cursor: pointer;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    transition: all 0.2s;
-  }
-  .refresh-btn:hover { background: #252525; }
+  .card-footer { display:flex; align-items:center; justify-content:space-between; margin-top:16px; }
+  .ptag { font-size:10px; letter-spacing:1px; text-transform:uppercase; padding:4px 10px; border-radius:4px; font-weight:500; }
+  .pt-blue { background:rgba(26,110,245,0.1); color:#60a5fa; }
+  .pt-red { background:rgba(230,51,41,0.1); color:#f87171; }
+  .pt-purple { background:rgba(124,58,237,0.1); color:#a78bfa; }
+  .pt-gold { background:rgba(240,165,0,0.1); color:var(--gold); }
 
-  .stats-bar {
-    display: flex;
-    border-bottom: 1px solid #1a1a1a;
-    overflow-x: auto;
-  }
+  .actions { display:flex; gap:8px; margin-top:16px; padding-top:16px; border-top:1px solid #1e1e1e; flex-wrap:wrap; align-items:center; }
+  .abtn { font-family:'DM Sans',sans-serif; font-size:11px; font-weight:500; letter-spacing:0.8px; text-transform:uppercase; padding:7px 14px; border-radius:6px; border:none; cursor:pointer; transition:all 0.2s; }
+  .abtn:disabled { opacity:0.3; cursor:not-allowed; }
+  .abtn-film { background:rgba(124,58,237,0.15); color:#a78bfa; border:1px solid rgba(124,58,237,0.3); }
+  .abtn-film:hover:not(:disabled) { background:rgba(124,58,237,0.3); }
+  .abtn-pub { background:rgba(74,222,128,0.15); color:#4ade80; border:1px solid rgba(74,222,128,0.3); }
+  .abtn-pub:hover:not(:disabled) { background:rgba(74,222,128,0.3); }
+  .abtn-reset { background:transparent; color:#555; border:1px solid #2a2a2a; margin-left:auto; }
+  .abtn-reset:hover:not(:disabled) { color:#888; border-color:#444; }
 
-  .stat {
-    flex: 1;
-    min-width: 100px;
-    padding: 24px 32px;
-    border-right: 1px solid #1a1a1a;
-    text-align: center;
-  }
-  .stat:last-child { border-right: none; }
+  .toast { position:fixed; bottom:32px; right:32px; background:#1a1a1a; border:1px solid #333; color:var(--white); padding:14px 20px; border-radius:10px; font-size:13px; z-index:999; opacity:0; transform:translateY(12px); transition:all 0.3s; pointer-events:none; }
+  .toast.show { opacity:1; transform:translateY(0); }
+  .toast.ok { border-color:rgba(74,222,128,0.4); }
+  .toast.err { border-color:rgba(230,51,41,0.4); color:#f87171; }
 
-  .stat-number {
-    font-family: 'Syne', sans-serif;
-    font-size: 36px;
-    font-weight: 800;
-    line-height: 1;
-    display: block;
-  }
+  .loading { text-align:center; padding:80px; color:var(--muted); }
+  .dots span { display:inline-block; width:8px; height:8px; background:var(--red); border-radius:50%; margin:0 3px; animation:bounce 1.2s infinite; }
+  .dots span:nth-child(2) { animation-delay:0.2s; }
+  .dots span:nth-child(3) { animation-delay:0.4s; }
+  .erbox { background:rgba(230,51,41,0.08); border:1px solid rgba(230,51,41,0.2); border-radius:10px; padding:24px; color:#f87171; font-size:13px; line-height:1.8; }
+  .empty { text-align:center; padding:60px; color:var(--muted); font-size:14px; }
 
-  .stat-label {
-    font-size: 11px;
-    color: var(--text-muted);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-top: 6px;
-    display: block;
-  }
-
-  .stat.ready .stat-number { color: var(--gold); }
-  .stat.filmed .stat-number { color: #a78bfa; }
-  .stat.published .stat-number { color: #4ade80; }
-
-  .filters {
-    padding: 20px 48px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    border-bottom: 1px solid #1a1a1a;
-    align-items: center;
-  }
-
-  .filter-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-right: 4px; }
-
-  .filter-btn {
-    background: transparent;
-    border: 1px solid #333;
-    color: #888;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .filter-btn:hover { border-color: #555; color: #ccc; }
-  .filter-btn.active { background: var(--white); color: var(--black); border-color: var(--white); }
-  .filter-btn[data-pillar="The 50/50 Era"].active { background: var(--blue); border-color: var(--blue); color: white; }
-  .filter-btn[data-pillar="Problem First. AI Second."].active { background: var(--red); border-color: var(--red); color: white; }
-  .filter-btn[data-pillar="AI Officer in the Wild"].active { background: var(--purple); border-color: var(--purple); color: white; }
-  .filter-btn[data-pillar="Proof It Works"].active { background: var(--gold); border-color: var(--gold); color: black; }
-
-  .content-area { padding: 32px 48px 64px; }
-
-  .section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .section-title::after { content: ''; flex: 1; height: 1px; background: #1a1a1a; }
-
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 16px;
-  }
-
-  .card {
-    background: #111;
-    border: 1px solid #1e1e1e;
-    border-radius: 12px;
-    padding: 24px;
-    transition: all 0.25s;
-    position: relative;
-    overflow: hidden;
-    animation: fadeUp 0.4s ease forwards;
-    opacity: 0;
-  }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-  }
-
-  .card[data-pillar="The 50/50 Era"]::before { background: var(--blue); }
-  .card[data-pillar="Problem First. AI Second."]::before { background: var(--red); }
-  .card[data-pillar="AI Officer in the Wild"]::before { background: var(--purple); }
-  .card[data-pillar="Proof It Works"]::before { background: var(--gold); }
-
-  .card:hover { border-color: #2a2a2a; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-
-  .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 14px;
-    gap: 12px;
-  }
-
-  .card-num { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; }
-
-  .status-badge {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 20px;
-  }
-  .status-badge.ready    { background: rgba(240,165,0,0.15); color: var(--gold); border: 1px solid rgba(240,165,0,0.3); }
-  .status-badge.filmed   { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
-  .status-badge.published { background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
-
-  .card-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 17px;
-    font-weight: 700;
-    line-height: 1.3;
-    margin-bottom: 12px;
-    letter-spacing: -0.3px;
-  }
-
-  .card-hook { font-size: 13px; color: #aaa; line-height: 1.6; margin-bottom: 16px; font-style: italic; }
-  .card-hook::before { content: '"'; }
-  .card-hook::after { content: '"'; }
-
-  .card-divider { height: 1px; background: #1e1e1e; margin-bottom: 14px; }
-
-  .card-remember-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
-  .card-remember { font-size: 13px; color: #ccc; line-height: 1.6; }
-
-  /* STATUS ACTIONS */
-  .card-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid #1e1e1e;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .action-btn {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    padding: 7px 14px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .btn-filmed {
-    background: rgba(124,58,237,0.15);
-    color: #a78bfa;
-    border: 1px solid rgba(124,58,237,0.3);
-  }
-  .btn-filmed:hover:not(:disabled) { background: rgba(124,58,237,0.3); }
-
-  .btn-published {
-    background: rgba(74,222,128,0.15);
-    color: #4ade80;
-    border: 1px solid rgba(74,222,128,0.3);
-  }
-  .btn-published:hover:not(:disabled) { background: rgba(74,222,128,0.3); }
-
-  .btn-reset {
-    background: transparent;
-    color: #555;
-    border: 1px solid #2a2a2a;
-    margin-left: auto;
-  }
-  .btn-reset:hover:not(:disabled) { color: #888; border-color: #444; }
-
-  .card-pillar-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 12px;
-  }
-
-  .pillar-tag {
-    font-size: 10px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-weight: 500;
-  }
-  .pillar-tag.blue   { background: rgba(26,110,245,0.1); color: #60a5fa; }
-  .pillar-tag.red    { background: rgba(230,51,41,0.1); color: #f87171; }
-  .pillar-tag.purple { background: rgba(124,58,237,0.1); color: #a78bfa; }
-  .pillar-tag.gold   { background: rgba(240,165,0,0.1); color: var(--gold); }
-
-  .card-date { font-size: 11px; color: var(--text-muted); }
-
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 32px;
-    right: 32px;
-    background: #1a1a1a;
-    border: 1px solid #333;
-    color: var(--white);
-    padding: 14px 20px;
-    border-radius: 10px;
-    font-size: 13px;
-    z-index: 999;
-    opacity: 0;
-    transform: translateY(12px);
-    transition: all 0.3s;
-    pointer-events: none;
-    max-width: 300px;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-  .toast.success { border-color: rgba(74,222,128,0.4); }
-  .toast.error   { border-color: rgba(230,51,41,0.4); color: #f87171; }
-
-  /* LOADING */
-  .loading { text-align: center; padding: 80px; color: var(--text-muted); }
-  .loading-dots span { display: inline-block; width: 8px; height: 8px; background: var(--red); border-radius: 50%; margin: 0 3px; animation: bounce 1.2s infinite; }
-  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-  .error-state { background: rgba(230,51,41,0.08); border: 1px solid rgba(230,51,41,0.2); border-radius: 10px; padding: 24px; color: #f87171; font-size: 13px; line-height: 1.8; }
-
-  .empty-state { text-align: center; padding: 60px; color: var(--text-muted); font-size: 14px; }
-
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
-
-  @media (max-width: 600px) {
-    header, .filters, .content-area { padding-left: 20px; padding-right: 20px; }
-    .stat { padding: 16px 12px; }
-    .cards-grid { grid-template-columns: 1fr; }
-  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes bounce { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+  @media(max-width:600px) { header,.filters,.content{padding-left:20px;padding-right:20px} .stat{padding:16px 12px} .grid{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-left">
+  <div>
     <h1>Dave's Content <span>Queue</span></h1>
-    <p class="tagline">AI Officer Institute · Problem first. AI second. ROI always.</p>
+    <p class="tagline">AI Officer Institute &middot; Problem first. AI second. ROI always.</p>
   </div>
-  <div class="header-right">
-    <span class="last-updated" id="lastUpdated">Loading...</span>
-    <button class="refresh-btn" onclick="loadData()">↺ Refresh</button>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span id="lastUpdated"></span>
+    <button class="refresh-btn" onclick="loadData()">&#8635; Refresh</button>
   </div>
 </header>
 
 <div class="stats-bar">
-  <div class="stat">
-    <span class="stat-number" id="statTotal">—</span>
-    <span class="stat-label">Total</span>
-  </div>
-  <div class="stat ready">
-    <span class="stat-number" id="statReady">—</span>
-    <span class="stat-label">Ready to Film</span>
-  </div>
-  <div class="stat filmed">
-    <span class="stat-number" id="statFilmed">—</span>
-    <span class="stat-label">Filmed</span>
-  </div>
-  <div class="stat published">
-    <span class="stat-number" id="statPublished">—</span>
-    <span class="stat-label">Published</span>
-  </div>
+  <div class="stat"><span class="stat-num" id="sTotal">-</span><span class="stat-lbl">Total</span></div>
+  <div class="stat s-ready"><span class="stat-num" id="sReady">-</span><span class="stat-lbl">Ready to Film</span></div>
+  <div class="stat s-filmed"><span class="stat-num" id="sFilmed">-</span><span class="stat-lbl">Filmed</span></div>
+  <div class="stat s-pub"><span class="stat-num" id="sPub">-</span><span class="stat-lbl">Published</span></div>
 </div>
 
 <div class="filters">
-  <span class="filter-label">Filter:</span>
-  <button class="filter-btn active" onclick="filterStatus('all', this)">All</button>
-  <button class="filter-btn" onclick="filterStatus('Ready to Film', this)">🎬 Ready to Film</button>
-  <button class="filter-btn" onclick="filterStatus('Filmed', this)">✅ Filmed</button>
-  <button class="filter-btn" onclick="filterStatus('Published', this)">🚀 Published</button>
-  <button class="filter-btn" data-pillar="The 50/50 Era" onclick="filterPillar('The 50/50 Era', this)">The 50/50 Era</button>
-  <button class="filter-btn" data-pillar="Problem First. AI Second." onclick="filterPillar('Problem First. AI Second.', this)">Problem First</button>
-  <button class="filter-btn" data-pillar="AI Officer in the Wild" onclick="filterPillar('AI Officer in the Wild', this)">AI Officer in the Wild</button>
-  <button class="filter-btn" data-pillar="Proof It Works" onclick="filterPillar('Proof It Works', this)">Proof It Works</button>
+  <span class="flbl">Filter:</span>
+  <button class="fbtn active" onclick="fStatus('all',this)">All</button>
+  <button class="fbtn" onclick="fStatus('ready',this)">Ready to Film</button>
+  <button class="fbtn" onclick="fStatus('filmed',this)">Filmed</button>
+  <button class="fbtn" onclick="fStatus('published',this)">Published</button>
+  <button class="fbtn" data-p="The 50/50 Era" onclick="fPillar('The 50/50 Era',this)">The 50/50 Era</button>
+  <button class="fbtn" data-p="Problem First. AI Second." onclick="fPillar('Problem First. AI Second.',this)">Problem First</button>
+  <button class="fbtn" data-p="AI Officer in the Wild" onclick="fPillar('AI Officer in the Wild',this)">AI Officer in the Wild</button>
+  <button class="fbtn" data-p="Proof It Works" onclick="fPillar('Proof It Works',this)">Proof It Works</button>
 </div>
 
-<div class="content-area">
-  <div class="loading" id="loadingState">
-    <div class="loading-dots"><span></span><span></span><span></span></div>
-    <p style="margin-top:16px; font-size:13px;">Loading content queue...</p>
-  </div>
-  <div id="errorState" style="display:none"></div>
-  <div id="contentGrid" style="display:none">
-    <p class="section-title" id="sectionLabel">All Content</p>
-    <div class="cards-grid" id="cardsGrid"></div>
+<div class="content">
+  <div class="loading" id="loading"><div class="dots"><span></span><span></span><span></span></div><p style="margin-top:16px;font-size:13px">Loading...</p></div>
+  <div id="errBox" style="display:none"></div>
+  <div id="main" style="display:none">
+    <p class="sec-title" id="secLbl">All Content</p>
+    <div class="grid" id="grid"></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  // ⚠️ PASTE YOUR APPS SCRIPT WEB APP URL HERE after deploying
-  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzBIqYSmUBdZk-MTeHKX9f1i4ljL3GshJ_qhVzvmxWW7cW9MkRF6Kgc6OrKupq75DCT/exec';
+  // ---- PASTE YOUR WEB APP URL AND CSV URL HERE ----
+  const WEB_APP = 'https://script.google.com/macros/s/AKfycbzBIqYSmUBdZk-MTeHKX9f1i4ljL3GshJ_qhVzvmxWW7cW9MkRF6Kgc6OrKupq75DCT/exec';
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQFgQel0JJ0xTYgnpDzeR6RgSkzmS3xmFhaogJRhPoWI7CcrzgbbzXjeh4ODqTDowOpuY2Lo-iNQx6a/pub?output=csv';
 
-  const PILLAR_COLORS = {
-    'The 50/50 Era': 'blue',
-    'Problem First. AI Second.': 'red',
-    'AI Officer in the Wild': 'purple',
-    'Proof It Works': 'gold',
-  };
+  const PC = { 'The 50/50 Era':'blue','Problem First. AI Second.':'red','AI Officer in the Wild':'purple','Proof It Works':'gold' };
+  let all=[], sfilt='all', pfilt='all';
 
-  let allItems = [];
-  let currentStatusFilter = 'all';
-  let currentPillarFilter = 'all';
+  function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    let hi = -1;
+    for (let i=0;i<lines.length;i++) {
+      if (lines[i].includes('Video Name') && lines[i].includes('Pillar')) { hi=i; break; }
+    }
+    if (hi===-1) return [];
+    const hdrs = csvLine(lines[hi]).map(h=>h.trim());
+    const items=[];
+    for (let i=hi+1;i<lines.length;i++) {
+      const cols=csvLine(lines[i]);
+      const num=String(cols[0]||'').trim();
+      const title=String(cols[1]||'').trim();
+      if (!num||!title||isNaN(num)) continue;
+      const o={};
+      hdrs.forEach((h,idx)=>{ o[h]=(cols[idx]||'').trim(); });
+      items.push({ num, title, pillar:o['Pillar']||'', hook:o['Hook']||'', remember:o['What to Remember']||'', status:o['Status']||'', date:o['Date']||'' });
+    }
+    return items;
+  }
 
-  // STATUS FLOW: Ready to Film → Filmed → Published → Ready to Film
-  const STATUS_NEXT = {
-    'ready to film': 'Filmed',
-    'filmed':        'Published',
-    'published':     'Ready to Film',
-  };
+  function csvLine(line) {
+    const r=[]; let cur='', q=false;
+    for (let c of line) {
+      if (c==='"') q=!q;
+      else if (c===','&&!q) { r.push(cur); cur=''; }
+      else cur+=c;
+    }
+    r.push(cur); return r;
+  }
 
-  function getStatusClass(s) {
+  function sc(s) {
     if (!s) return '';
-    const l = s.toLowerCase();
+    const l=s.toLowerCase();
     if (l.includes('ready')) return 'ready';
     if (l.includes('published')) return 'published';
     if (l.includes('filmed')) return 'filmed';
     return '';
   }
 
-  function renderCards(items) {
-    const grid = document.getElementById('cardsGrid');
-    if (!items.length) {
-      grid.innerHTML = '<div class="empty-state">📭 No content found for this filter.</div>';
-      return;
-    }
-
-    grid.innerHTML = items.map((item, idx) => {
-      const sc    = getStatusClass(item.status);
-      const pc    = PILLAR_COLORS[item.pillar] || 'blue';
-      const delay = (idx * 0.05).toFixed(2);
-      const sl    = (item.status || '').toLowerCase();
-
-      const canFilm    = sl.includes('ready');
-      const canPublish = sl.includes('filmed') && !sl.includes('ready');
-      const canReset   = sl.includes('published');
-
-      return `
-        <div class="card" data-pillar="${item.pillar}" data-status="${item.status}" data-num="${item.num}" style="animation-delay:${delay}s">
-          <div class="card-top">
-            <span class="card-num">#${item.num}</span>
-            <span class="status-badge ${sc}">${item.status || 'No Status'}</span>
-          </div>
-          <div class="card-title">${item.title}</div>
-          ${item.hook ? `<div class="card-hook">${item.hook}</div>` : ''}
-          ${item.remember ? `
-            <div class="card-divider"></div>
-            <div class="card-remember-label">What to Remember</div>
-            <div class="card-remember">${item.remember}</div>
-          ` : ''}
-          <div class="card-pillar-row">
-            <span class="pillar-tag ${pc}">${item.pillar}</span>
-            ${item.date ? `<span class="card-date">${item.date}</span>` : ''}
-          </div>
-          <div class="card-actions">
-            <button class="action-btn btn-filmed" onclick="updateStatus('${item.num}', 'Filmed', this)" ${canFilm ? '' : 'disabled'}>
-              🎬 Mark as Filmed
-            </button>
-            <button class="action-btn btn-published" onclick="updateStatus('${item.num}', 'Published', this)" ${canPublish ? '' : 'disabled'}>
-              🚀 Mark as Published
-            </button>
-            <button class="action-btn btn-reset" onclick="updateStatus('${item.num}', 'Ready to Film', this)" ${canReset ? '' : 'disabled'} title="Reset to Ready to Film">
-              ↺
-            </button>
-          </div>
+  function render(items) {
+    const g=document.getElementById('grid');
+    if (!items.length) { g.innerHTML='<div class="empty">No content found.</div>'; return; }
+    g.innerHTML=items.map((item,i)=>{
+      const s=sc(item.status), pc=PC[item.pillar]||'blue';
+      const canFilm=s==='ready', canPub=s==='filmed', canReset=s==='published';
+      return `<div class="card" data-p="${item.pillar}" style="animation-delay:${(i*0.05).toFixed(2)}s">
+        <div class="card-top">
+          <span class="card-num">#${item.num}</span>
+          <span class="badge b-${s||'ready'}">${item.status||'Ready to Film'}</span>
         </div>
-      `;
+        <div class="card-title">${item.title}</div>
+        ${item.hook?`<div class="card-hook">${item.hook}</div>`:''}
+        ${item.remember?`<div class="divider"></div><div class="rem-lbl">What to Remember</div><div class="rem">${item.remember}</div>`:''}
+        <div class="card-footer">
+          <span class="ptag pt-${pc}">${item.pillar}</span>
+          ${item.date?`<span style="font-size:11px;color:var(--muted)">${item.date}</span>`:''}
+        </div>
+        <div class="actions">
+          <button class="abtn abtn-film" onclick="doUpdate('${item.num}','Filmed',this)" ${canFilm?'':'disabled'}>🎬 Mark as Filmed</button>
+          <button class="abtn abtn-pub" onclick="doUpdate('${item.num}','Published',this)" ${canPub?'':'disabled'}>🚀 Mark as Published</button>
+          <button class="abtn abtn-reset" onclick="doUpdate('${item.num}','Ready to Film',this)" ${canReset?'':'disabled'} title="Reset">&#8635;</button>
+        </div>
+      </div>`;
     }).join('');
   }
 
-  async function updateStatus(num, status, btn) {
-    // Disable all buttons on this card
-    const card = btn.closest('.card');
-    card.querySelectorAll('.action-btn').forEach(b => b.disabled = true);
+  function stats(items) {
+    document.getElementById('sTotal').textContent=items.length;
+    document.getElementById('sReady').textContent=items.filter(i=>sc(i.status)==='ready').length;
+    document.getElementById('sFilmed').textContent=items.filter(i=>sc(i.status)==='filmed').length;
+    document.getElementById('sPub').textContent=items.filter(i=>sc(i.status)==='published').length;
+  }
 
-    // Optimistic UI update
-    const badge = card.querySelector('.status-badge');
-    badge.textContent = status;
-    badge.className = 'status-badge ' + getStatusClass(status);
+  function apply() {
+    let f=[...all];
+    if (sfilt!=='all') f=f.filter(i=>sc(i.status)===sfilt);
+    if (pfilt!=='all') f=f.filter(i=>i.pillar===pfilt);
+    render(f);
+    document.getElementById('secLbl').textContent=[sfilt!=='all'?sfilt:'',pfilt!=='all'?pfilt:''].filter(Boolean).join(' · ')||'All Content';
+  }
 
-    showToast('Updating...', '');
+  function fStatus(s,btn) { sfilt=s; document.querySelectorAll('.fbtn:not([data-p])').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); apply(); }
+  function fPillar(p,btn) { if(pfilt===p){pfilt='all';btn.classList.remove('active');}else{pfilt=p;document.querySelectorAll('.fbtn[data-p]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');} apply(); }
 
+  function toast(msg,type) {
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.className='toast show '+(type||'');
+    clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',3000);
+  }
+
+  async function doUpdate(num,status,btn) {
+    const card=btn.closest('.card');
+    card.querySelectorAll('.abtn').forEach(b=>b.disabled=true);
+    const badge=card.querySelector('.badge');
+    badge.textContent=status;
+    badge.className='badge b-'+sc(status);
+    toast('Updating...','');
     try {
-      const url = `${WEB_APP_URL}?num=${encodeURIComponent(num)}&status=${encodeURIComponent(status)}`;
-      const res  = await fetch(url);
-      const data = await res.json();
-
+      const res=await fetch(WEB_APP+'?num='+encodeURIComponent(num)+'&status='+encodeURIComponent(status));
+      const data=await res.json();
       if (data.success) {
-        showToast(`✅ #${num} marked as ${status}`, 'success');
-        // Update local data
-        const item = allItems.find(i => i.num === String(num));
-        if (item) item.status = status;
-        updateStats(allItems);
-        // Re-render this card
-        setTimeout(() => applyFilters(), 800);
-      } else {
-        throw new Error(data.error || 'Update failed');
-      }
-    } catch (err) {
-      showToast('❌ ' + err.message, 'error');
-      // Re-enable buttons on failure
-      card.querySelectorAll('.action-btn').forEach(b => b.disabled = false);
+        const item=all.find(i=>i.num===String(num));
+        if (item) item.status=status;
+        stats(all);
+        toast('Done! #'+num+' is now '+status,'ok');
+        setTimeout(()=>apply(),600);
+      } else throw new Error(data.error);
+    } catch(e) {
+      toast('Error: '+e.message,'err');
+      card.querySelectorAll('.abtn').forEach(b=>b.disabled=false);
     }
   }
 
-  function updateStats(items) {
-    document.getElementById('statTotal').textContent     = items.length;
-    document.getElementById('statReady').textContent     = items.filter(i => i.status.toLowerCase().includes('ready')).length;
-    document.getElementById('statFilmed').textContent    = items.filter(i => i.status.toLowerCase() === 'filmed').length;
-    document.getElementById('statPublished').textContent = items.filter(i => i.status.toLowerCase().includes('published')).length;
-  }
-
-  function applyFilters() {
-    let filtered = [...allItems];
-    if (currentStatusFilter !== 'all') filtered = filtered.filter(i => i.status.toLowerCase().includes(currentStatusFilter.toLowerCase()));
-    if (currentPillarFilter  !== 'all') filtered = filtered.filter(i => i.pillar === currentPillarFilter);
-    renderCards(filtered);
-    const label = [
-      currentStatusFilter !== 'all' ? currentStatusFilter : '',
-      currentPillarFilter  !== 'all' ? currentPillarFilter  : '',
-    ].filter(Boolean).join(' · ') || 'All Content';
-    document.getElementById('sectionLabel').textContent = label;
-  }
-
-  function filterStatus(status, btn) {
-    currentStatusFilter = status;
-    document.querySelectorAll('.filter-btn:not([data-pillar])').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    applyFilters();
-  }
-
-  function filterPillar(pillar, btn) {
-    if (currentPillarFilter === pillar) { currentPillarFilter = 'all'; btn.classList.remove('active'); }
-    else { currentPillarFilter = pillar; document.querySelectorAll('.filter-btn[data-pillar]').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-    applyFilters();
-  }
-
-  function showToast(msg, type) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast show ' + (type || '');
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.className = 'toast', 3000);
-  }
-
   async function loadData() {
-    document.getElementById('loadingState').style.display = 'block';
-    document.getElementById('contentGrid').style.display  = 'none';
-    document.getElementById('errorState').style.display   = 'none';
-
+    document.getElementById('loading').style.display='block';
+    document.getElementById('main').style.display='none';
+    document.getElementById('errBox').style.display='none';
     try {
-      const res  = await fetch('./data.json?t=' + Date.now());
-      if (!res.ok) throw new Error('data.json not found — run testPublish() in Apps Script first');
-      const data = await res.json();
-      allItems   = data.items || [];
-
-      updateStats(allItems);
-      applyFilters();
-
-      document.getElementById('loadingState').style.display = 'none';
-      document.getElementById('contentGrid').style.display  = 'block';
-      const updated = data.lastUpdated ? new Date(data.lastUpdated).toLocaleString() : new Date().toLocaleTimeString();
-      document.getElementById('lastUpdated').textContent = 'Updated ' + updated;
-    } catch (err) {
-      document.getElementById('loadingState').style.display = 'none';
-      document.getElementById('errorState').style.display   = 'block';
-      document.getElementById('errorState').innerHTML = `
-        <div class="error-state">
-          <strong>⚠️ Could not load data.json</strong><br><br>
-          Run <strong>testPublish()</strong> in Google Apps Script first.<br>
-          This pushes your sheet data to GitHub automatically.<br><br>
-          <small style="opacity:0.5">${err.message}</small>
-        </div>`;
+      const res=await fetch(CSV_URL+'&t='+Date.now());
+      if (!res.ok) throw new Error('Could not load sheet');
+      const text=await res.text();
+      all=parseCSV(text);
+      stats(all);
+      apply();
+      document.getElementById('loading').style.display='none';
+      document.getElementById('main').style.display='block';
+      document.getElementById('lastUpdated').textContent='Updated '+new Date().toLocaleTimeString();
+    } catch(e) {
+      document.getElementById('loading').style.display='none';
+      document.getElementById('errBox').style.display='block';
+      document.getElementById('errBox').innerHTML='<div class="erbox"><strong>Could not load sheet</strong><br><br>'+e.message+'</div>';
     }
   }
 
